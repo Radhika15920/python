@@ -50,6 +50,25 @@ print("\nTrains:")
 for row in trains:
     print(row)
 
+train_id = 104 
+sql_query = f"""SELECT t.train_id, t.train_name, COUNT(s.seat_id) AS total_seats, COUNT(r.seat_id) AS reserved_seats,
+COUNT(s.seat_id) - COUNT(r.seat_id) AS available_seats FROM Trains t
+JOIN 
+    Seats s ON t.train_id = s.train_id
+LEFT JOIN 
+    Reservations r ON s.seat_id = r.seat_id
+WHERE
+    t.train_id = {train_id} 
+GROUP BY 
+    t.train_id, t.train_name; """
+cursor.execute(sql_query)
+print(f"Seat Availability for Train ID {train_id}:")
+for row in cursor.fetchall():
+    print(f"Train Name: {row.train_name}")
+    print(f"Total Seats: {row.total_seats}")
+    print(f"Reserved Seats: {row.reserved_seats}")
+    print(f"Available Seats: {row.available_seats}")    
+
 cursor.close()
 conn.close()
 
